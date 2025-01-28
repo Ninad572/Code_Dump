@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Color Switch Dash</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            touch-action: manipulation;
+        }
+        #game {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        #player {
+            width: 30px;
+            height: 30px;
+            background: #ff0000;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .gate {
+            width: 100px;
+            height: 20px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+        #score {
+            color: white;
+            font-size: 24px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="score">Score: 0</div>
+        <div id="player"></div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const game = document.getElementById('game');
+        const scoreElement = document.getElementById('score');
+        let score = 0;
+        let currentColor = 'red';
+        const colors = ['red', 'blue', 'green', 'yellow'];
+
+        // Change player color on tap
+        game.addEventListener('touchstart', () => {
+            const newColor = colors[Math.floor(Math.random() * colors.length)];
+            player.style.backgroundColor = newColor;
+            currentColor = newColor;
+        });
+
+        // Spawn gates
+        function spawnGate() {
+            const gate = document.createElement('div');
+            gate.className = 'gate';
+            gate.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            gate.style.top = '-20px';
+            game.appendChild(gate);
+
+            let position = -20;
+            const move = setInterval(() => {
+                position += 2;
+                gate.style.top = position + 'px';
+
+                // Collision check
+                if (position + 20 > player.offsetTop && position < player.offsetTop + 30) {
+                    if (gate.style.backgroundColor !== currentColor) {
+                        alert(`Game Over! Score: ${score}`);
+                        location.reload();
+                    }
+                }
+
+                if (position > window.innerHeight) {
+                    clearInterval(move);
+                    gate.remove();
+                    score += 10;
+                    scoreElement.textContent = `Score: ${score}`;
+                }
+            }, 10);
+        }
+
+        // Start game loop
+        setInterval(spawnGate, 1500);
+    </script>
+</body>
+</html>
